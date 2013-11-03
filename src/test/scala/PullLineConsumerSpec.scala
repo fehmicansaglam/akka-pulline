@@ -1,15 +1,14 @@
-import akka.actor.ActorSystem
-import akka.testkit.{ ImplicitSender, TestKit }
+import akka.actor.{ Props, ActorSystem }
+import akka.testkit.{ EventFilter, ImplicitSender, TestKit }
+import org.saglam.pullline.Messages._
 import org.saglam.pullline.PullLineWorker
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{ BeforeAndAfterAll, WordSpecLike }
+import scala.util.Success
 
 object PullLineConsumerSpec {
-  class RandomStringConsumer extends PullLineWorker[Unit] {
-
-    override def doWork(work: Option[Any]): Option[Unit] = {
-      work.map { str => log.info(str.toString) }
-    }
+  class StringConsumer extends PullLineWorker[String, Unit] {
+    def doWork(work: Option[String]): Option[Unit] = work.map(log.info(_))
   }
 }
 
@@ -26,6 +25,20 @@ class PullLineConsumerSpec(_system: ActorSystem)
 
   override def afterAll {
     TestKit.shutdownActorSystem(system)
+  }
+
+  "A StringConsumer" should {
+
+    "consume 2 strings" in {
+      val consumer = system.actorOf(Props[StringConsumer])
+      val message = "SOME_WORK"
+      EventFilter.info(message, occurrences = 2) intercept {
+        consumer ! Work(Some(message))
+        expectMsgPF() { case WorkDone(Success(result)) => result }
+        consumer ! Work(Some(message))
+        expectMsgPF() { case WorkDone(Success(result)) => result }
+      }
+    }
   }
 
 }

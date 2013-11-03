@@ -18,10 +18,9 @@ class PullLineProducer[R: ClassTag](workerLocation: String, rightLocation: Strin
   }
 
   def empty: Receive = {
-    case Pull => {
-      log.debug("Pull requested from {}", sender)
+    case Pull =>
+      log.debug("Pull requested from {}. State: empty", sender)
       worker ! Work(None)
-    }
 
     case WorkDone(result: Try[R]) =>
       log.debug("Work done {}", result)
@@ -37,7 +36,8 @@ class PullLineProducer[R: ClassTag](workerLocation: String, rightLocation: Strin
 
   def ready: Receive = {
     case Pull =>
-      sender ! PullDone(rightBuffer.dequeue())
+      log.debug("Pull requested from {}. State: ready", sender)
+      sender ! PullDone(Some(rightBuffer.dequeue()))
       worker ! Work(None)
       if (rightBuffer.isEmpty)
         context.become(empty)
@@ -52,12 +52,15 @@ class PullLineProducer[R: ClassTag](workerLocation: String, rightLocation: Strin
 
   def exhausted: Receive = {
     case Pull =>
+      log.debug("Pull requested from {}. State: exhausted", sender)
       if (rightBuffer.isEmpty) {
         sender ! NoMoreData
         worker ! PoisonPill
       } else {
-        sender ! PullDone(rightBuffer.dequeue())
+        sender ! PullDone(Some(rightBuffer.dequeue()))
       }
+
+    case Exhausted =>
   }
 
   def receive = empty

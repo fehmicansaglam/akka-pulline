@@ -4,12 +4,12 @@ import akka.actor._
 import org.saglam.pullline.Messages._
 import scala.util.{ Failure, Success }
 
-abstract class PullLineWorker[T] extends Actor with ActorLogging {
+abstract class PullLineWorker[I, O] extends Actor with ActorLogging {
 
-  def doWork(work: Option[Any]): Option[T]
+  def doWork(work: Option[I]): Option[O]
 
   def receive = {
-    case Work(work) =>
+    case Work(work: Option[I]) =>
       try {
         doWork(work) match {
           case None => sender ! Exhausted

@@ -4,15 +4,15 @@ import java.util.UUID
 import org.scalatest.{ WordSpecLike, BeforeAndAfterAll }
 import org.scalatest.matchers.ShouldMatchers
 import org.saglam.pullline.Messages._
-import org.saglam.pullline.{ PullLineProducer, PullLineWorker }
+import org.saglam.pullline._
 import scala.util.Success
 
 object PullLineProducerSpec {
-  class RandomStringProducer(count: Int) extends PullLineWorker[String] {
+  class RandomStringProducer(count: Int) extends PullLineWorker[Unit, String] {
 
     var produced = 0
 
-    override def doWork(work: Option[Any]): Option[String] = {
+    override def doWork(work: Option[Unit]): Option[String] = {
       if (produced == count)
         None
       else {
@@ -54,7 +54,7 @@ class PullLineProducerSpec(_system: ActorSystem)
   "A PullLineProducer" should {
 
     "produce 2 random strings" in {
-      val producer = system.actorOf(Props(new RandomStringProducer(2)),
+      system.actorOf(Props(new RandomStringProducer(2)),
         "producer")
       val pullLineProducer = system.actorOf(Props(
         new PullLineProducer[String]("/user/producer", testActor.path.toString,
@@ -63,9 +63,14 @@ class PullLineProducerSpec(_system: ActorSystem)
       pullLineProducer ! Pull
       expectMsg(WorkIsReady)
       pullLineProducer ! Pull
-      expectMsgPF() { case PullDone(result) => result }
+      expectMsgPF() { case PullDone(Some(result)) => result }
       pullLineProducer ! Pull
-      expectMsgPF() { case PullDone(result) => result }
+      expectMsgPF() {
+        case PullDone(Some(result)) => result
+        case WorkIsReady =>
+          pullLineProducer ! Pull
+          expectMsgPF() { case PullDone(Some(result)) => result }
+      }
       pullLineProducer ! Pull
       expectMsg(NoMoreData)
     }

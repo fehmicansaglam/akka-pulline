@@ -8,7 +8,8 @@ import scala.util.Try
 
 class PullLineAdapter[L: ClassTag, R: ClassTag](workerLocation: String,
   leftLocation: String, rightLocation: String, bufferSize: Int)
-    extends Actor with ActorLogging {
+    extends Actor
+    with ActorLogging {
 
   val worker = context.actorSelection(workerLocation)
   val left = context.actorSelection(leftLocation)
@@ -22,11 +23,10 @@ class PullLineAdapter[L: ClassTag, R: ClassTag](workerLocation: String,
 
   def empty: Receive = {
     case Pull =>
-      log.debug("Work requested from {}", sender)
+      log.debug("Pull requested from {}. State: empty", sender)
       left ! Pull
 
-    case PullDone(result: L) =>
-      worker ! Work(Some(result))
+    case PullDone(result: Option[L]) => worker ! Work(result)
 
     case WorkDone(result: Try[R]) =>
       result.foreach { _result =>
@@ -44,13 +44,13 @@ class PullLineAdapter[L: ClassTag, R: ClassTag](workerLocation: String,
 
   def ready: Receive = {
     case Pull =>
-      log.debug("Work requested from {}", sender)
-      sender ! PullDone(rightBuffer.dequeue())
+      log.debug("Pull requested from {}. State: ready", sender)
+      sender ! PullDone(Some(rightBuffer.dequeue()))
       left ! Pull
       if (rightBuffer.isEmpty)
         context.become(empty)
 
-    case PullDone(result: L) => worker ! Work(Some(result))
+    case PullDone(result: Option[L]) => worker ! Work(result)
 
     case WorkDone(result: Try[R]) =>
       result.foreach(rightBuffer.enqueue(_))
@@ -64,17 +64,17 @@ class PullLineAdapter[L: ClassTag, R: ClassTag](workerLocation: String,
 
   def noMoreData: Receive = {
     case Pull =>
-      log.debug("Work requested from {}", sender)
+      log.debug("Pull requested from {}. State: noMoreData", sender)
       if (rightBuffer.isEmpty) {
         sender ! NoMoreData
         worker ! PoisonPill
       } else {
-        sender ! PullDone(rightBuffer.dequeue())
+        sender ! PullDone(Some(rightBuffer.dequeue()))
       }
 
-    case WorkDone(result: Try[R]) =>
-      result.foreach(rightBuffer.enqueue(_))
+    case WorkDone(result: Try[R]) => result.foreach(rightBuffer.enqueue(_))
 
+    case NoMoreData =>
   }
 
   def receive = empty
