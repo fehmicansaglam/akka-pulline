@@ -1,4 +1,6 @@
-akka-pull-line
-==============
+Akka Pull Based Pipeline
+========================
 
-Akka PullLine
+Check out https://github.com/fehmicansaglam/akka-pull-line/blob/master/src/test/scala/PullLineSpec.scala
+
+
