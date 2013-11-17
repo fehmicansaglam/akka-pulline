@@ -4,6 +4,7 @@
 !.gitignore
 
 *.log
+repository/
 
 # sbt specific
 dist/*
