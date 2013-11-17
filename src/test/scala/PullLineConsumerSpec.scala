@@ -1,7 +1,7 @@
 import akka.actor.{ Props, ActorSystem }
 import akka.testkit.{ EventFilter, ImplicitSender, TestKit }
-import org.saglam.pullline.Messages._
-import org.saglam.pullline.PullLineWorker
+import org.akkapulline.Messages._
+import org.akkapulline._
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.{ BeforeAndAfterAll, WordSpecLike }
 import scala.util.Success

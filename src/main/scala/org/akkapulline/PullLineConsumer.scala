@@ -1,8 +1,8 @@
-package org.saglam.pullline
+package org.akkapulline
 
 import scala.reflect.ClassTag
 import akka.actor._
-import org.saglam.pullline.Messages._
+import org.akkapulline.Messages._
 
 class PullLineConsumer[L: ClassTag](workerLocation: String, leftLocation: String)
     extends Actor with ActorLogging {

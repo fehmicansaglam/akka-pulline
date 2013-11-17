@@ -1,4 +1,4 @@
-package org.saglam.pullline
+package org.akkapulline
 
 import scala.util.Try
 

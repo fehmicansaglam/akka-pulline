@@ -1,9 +1,9 @@
-package org.saglam.pullline
+package org.akkapulline
 
 import scala.reflect.ClassTag
 import akka.actor._
 import scala.collection.mutable
-import org.saglam.pullline.Messages._
+import org.akkapulline.Messages._
 import scala.util.Try
 
 class PullLineAdapter[L: ClassTag, R: ClassTag](workerLocation: String,

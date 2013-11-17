@@ -1,7 +1,7 @@
-package org.saglam.pullline
+package org.akkapulline
 
 import akka.actor._
-import org.saglam.pullline.Messages._
+import org.akkapulline.Messages._
 import scala.util.{ Failure, Success }
 
 abstract class PullLineWorker[I, O] extends Actor with ActorLogging {

@@ -3,8 +3,8 @@ import akka.testkit.{ EventFilter, ImplicitSender, TestKit }
 import java.util.UUID
 import org.scalatest.{ WordSpecLike, BeforeAndAfterAll }
 import org.scalatest.matchers.ShouldMatchers
-import org.saglam.pullline._
-import org.saglam.pullline.Messages._
+import org.akkapulline.Messages._
+import org.akkapulline._
 
 object PullLineSpec {
 
