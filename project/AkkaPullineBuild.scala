@@ -79,13 +79,13 @@ object Dependencies {
   val scalatest = "org.scalatest" % "scalatest_2.10" % "1.9.2" % "test"
 }
 
-object AkkaPullLineBuild extends Build {
+object AkkaPullineBuild extends Build {
   import BuildSettings._
   import Resolvers._
   import Dependencies._
 
-  lazy val akkaPullLine = Project(
-    id = "akka-pull-line",
+  lazy val akkaPulline = Project(
+    id = "akka-pulline",
     base = file("."),
     settings = buildSettings ++ Seq(
       libraryDependencies ++= Seq(
