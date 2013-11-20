@@ -53,7 +53,7 @@ object Format {
     import scalariform.formatter.preferences._
     FormattingPreferences().
       setPreference(AlignParameters, true).
-      setPreference(AlignSingleLineCaseStatements, true).
+      setPreference(AlignSingleLineCaseStatements, false).
       setPreference(CompactControlReadability, false).
       setPreference(CompactStringConcatenation, false).
       setPreference(DoubleIndentClassDeclaration, true).

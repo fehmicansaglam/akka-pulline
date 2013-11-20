@@ -7,7 +7,7 @@ import org.akkapulline.Messages._
 import scala.util.Try
 
 class PullLineAdapter[L: ClassTag, R: ClassTag](workerLocation: String,
-  leftLocation: String, rightLocation: String, bufferSize: Int)
+                                                leftLocation: String, rightLocation: String, bufferSize: Int)
     extends Actor
     with ActorLogging {
 
